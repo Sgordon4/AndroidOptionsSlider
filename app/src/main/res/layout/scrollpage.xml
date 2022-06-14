@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.sgordon4.slideview.SlideView
+        android:id="@+id/slide_test"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/lightgrey">
+            <com.github.chrisbanes.photoview.PhotoView
+                android:id="@+id/photo_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:id="@+id/options_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/darkgrey">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="600dp"
+                    android:text="@string/lorem_ipsum"
+                    android:scrollbars = "vertical"/>
+            </ScrollView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="More sample text options"/>
+
+        </LinearLayout>
+
+
+    </com.sgordon4.slideview.SlideView>
+
+
+    <TextView
+        app:layout_constraintTop_toBottomOf="@+id/slide_test"
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        android:text="Here is the bottom of the scrollview"
+        android:gravity="bottom"
+        android:background="@color/green"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

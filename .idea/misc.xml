@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSlider-Android/app/src/main/res/layout/page.xml" value="0.1" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/main_activity.xml" value="0.26871794871794874" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/main_fragment.xml" value="0.36666666666666664" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/page.xml" value="0.1" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/scrollpage.xml" value="0.13099041533546327" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/viewpage.xml" value="0.36666666666666664" />
+        <entry key="..\:/===Programming===/==Projects==/AndroidProjects/OptionsSliderExample/app/src/main/res/layout/viewpager.xml" value="0.36666666666666664" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
