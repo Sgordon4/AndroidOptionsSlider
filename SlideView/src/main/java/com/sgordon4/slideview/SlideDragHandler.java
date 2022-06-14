@@ -1,4 +1,4 @@
-package com.sgordon4.slideview;
+package com.example.slideview;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;

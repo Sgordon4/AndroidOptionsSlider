@@ -1,4 +1,4 @@
-package com.sgordon4.slideview;
+package com.example.slideview;
 
 import android.view.View;
 
@@ -25,21 +25,18 @@ public class SlideViewDragCallback extends ViewDragHelper.Callback {
     //Pulling the top below the top will be a gesture command later
     @Override
     public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
-        int topBound, bottomBound;
+        int bottomBound = slideDragHandler.slideView.windowHeight - slideDragHandler.slideView.fullWrapper.getHeight();
 
-        topBound = top;
-        bottomBound = slideDragHandler.slideView.windowHeight - slideDragHandler.slideView.fullWrapper.getHeight();
-
-        System.out.println("Top: "+top+", "+bottomBound);
-
-        //Constrain between 0 and bottomBound
+        //Disallow bottom of view from rising above bottom of window
         if(top < bottomBound)
             return bottomBound;
+        //Disallow top of view from dropping below top of window
         else if(top > 0)
             return 0;
         else return top;
 
-        //return Math.max(topBound, bottomBound);
+        //Only disallow bottom of view from rising above bottom of window
+        //return Math.max(top, bottomBound);
     }
 
     @Override

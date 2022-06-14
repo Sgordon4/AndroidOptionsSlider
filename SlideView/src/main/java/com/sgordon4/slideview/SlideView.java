@@ -1,4 +1,4 @@
-package com.sgordon4.slideview;
+package com.example.slideview;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,27 +19,17 @@ import androidx.annotation.NonNull;
 /*
 TODO
 
-In order to fill most use cases for this api, we still need several things:
+In order to fill some use cases for this api, we still need several things:
 
-A setup callback when triggered in onFinishInflate
-How to hook in animation and allow canceling downSwipe?
-Might be able to pass drag event or pointer id or something to the callback
-Maybe just don't allow swiping down past max, and allow a parent view to do the downswipe
-May need to redo how touch detection works, scrollview may have some tips because they can nest
-(just clampViewPositionVertical)
-
-if someone wants to position things oddly, attaching to windowHeight/2 + mainContentHeight/2
-may not cut it. Find another way to properly attach based on the actual locations of items.
-
-Scrollviews (either inside or surrounding this view) + drag = problemo
+Vertical ScrollViews (either inside or encapsulating this view) + drag = problemo.
+This disallows the user adding down-swipe detection (a-la Google photos) or whatever else is wanted.
+Plan to re-work this in the future, using ScrollView and PhotoView as inspiration.
 A previous note with photoView: https://github.com/Baseflow/PhotoView/issues/142
 
-Using ChrisBanes PhotoView:
-When options is open, upon single/double tapping on media, close options and do nothing else.
-Currently just allows media to be zoomed when options is open.
-Also allows viewpager to be swiped using the options view when media is zoomed, which is fine
-as it would never get to that point with the above fix
+If someone wants to position things oddly, attaching slider to windowHeight/2 + mainContentHeight/2
+may not cut it. Change slider attachment system to attach based on the actual locations of items.
 
+Ensure Viewpager swiping and swiping while libraries like ChrisBanes PhotoView are zoomed works.
  */
 
 
@@ -174,7 +164,7 @@ public class SlideView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        //Fullwrapper is in child index 1, look for more children defined in xml
+        //FullWrapper is in child index 1, look for more children defined in xml
         //If user added child count is not 0 or 2, throw a tantrum
 
         addPlaceholderViews(getContext());
@@ -262,7 +252,6 @@ public class SlideView extends FrameLayout {
                 sliderViewWrapper.setVisibility(View.INVISIBLE);
                 sliderViewWrapper.setClickable(false);
             }
-            //else System.out.println("Attempted to set slider invisible, but sliderAlwaysVisible is set to True!");
         }
     }
 
@@ -293,7 +282,6 @@ public class SlideView extends FrameLayout {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return super.dispatchTouchEvent( getDragHandler().dispatchTouchEvent(ev) );
     }
-
     @Override
     public void computeScroll() {
         getDragHandler().computeScroll();
