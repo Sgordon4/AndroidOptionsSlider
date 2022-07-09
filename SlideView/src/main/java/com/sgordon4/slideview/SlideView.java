@@ -1,4 +1,4 @@
-package com.example.slideview;
+package com.sgordon4.slideview;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -25,9 +25,16 @@ Vertical ScrollViews (either inside or encapsulating this view) + drag = problem
 This disallows the user adding down-swipe detection (a-la Google photos) or whatever else is wanted.
 Plan to re-work this in the future, using ScrollView and PhotoView as inspiration.
 A previous note with photoView: https://github.com/Baseflow/PhotoView/issues/142
+There's a chance it actually got re-worked while I was getting SlideView to play nice with ExoPlayer
 
 If someone wants to position things oddly, attaching slider to windowHeight/2 + mainContentHeight/2
 may not cut it. Change slider attachment system to attach based on the actual locations of items.
+
+What if user doesn't want MainContentHeight to automatically attach to the view? Make xml option to
+auto-attach to bottom of screen. Currently named sliderAutoAssessHeight, maybe change it to
+something like setSliderAtBottom because that's what it does
+
+Test what happens when the slider is taller than mid-window, and sliderLip is set to near full
 
 Ensure Viewpager swiping and swiping while libraries like ChrisBanes PhotoView are zoomed works.
  */
@@ -37,6 +44,7 @@ public class SlideView extends FrameLayout {
     int windowWidth = -1;
     int windowHeight = -1;
 
+    boolean sliderAutoAssessHeight = true;
     int mainContentHeight = -1;
     int sliderContentHeight = -1;
     int sliderLipHeight = 40;
@@ -51,8 +59,6 @@ public class SlideView extends FrameLayout {
 
 
     private final SlideDragHandler dragHandler;
-
-
 
 
     public SlideView(Context context) {
@@ -104,9 +110,14 @@ public class SlideView extends FrameLayout {
                 mainParams.height = windowHeight;
                 mainViewWrapper.setLayoutParams(mainParams);
 
-                //If the user never sent in the main content height...
-                if(mainContentHeight == -1)
-                    setMainContentHeight( mainViewWrapper.getChildAt(0).getHeight() );
+                //If the user hasn't set the main content height yet, grab the current height ourselves
+                if(mainContentHeight == -1) {
+                    if(sliderAutoAssessHeight)
+                        setMainContentHeight( mainViewWrapper.getChildAt(0).getHeight() );
+                    else
+                        setMainContentHeight( windowHeight );
+                }
+
 
 
 
@@ -187,6 +198,11 @@ public class SlideView extends FrameLayout {
         }
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     public void setMainView(@NonNull View mainChild) {
         mainViewWrapper.removeAllViews();
         mainViewWrapper.addView(mainChild);
@@ -212,14 +228,23 @@ public class SlideView extends FrameLayout {
     //This height must be scaled to the screen or there will be problems
     //The method calculateScaledContentHeight() can help with that
     public void setMainContentHeight(int height) {
-        if(height <= 0)
-            throw new IllegalArgumentException("Main content height must be greater than 0!");
+        if(height < 0)
+            throw new IllegalArgumentException("Main content height cannot be less than 0!");
         this.mainContentHeight = height;
         invalidate();
     }
 
+    //Determines whether the slider should automatically attach itself where it thinks it should
+    // if setMainContentHeight() is not called
+    public boolean getSliderAutoAssessHeight() {
+        return sliderAutoAssessHeight;
+    }
+    public void setSliderAutoAssessHeight(boolean sliderAutoAssessHeight) {
+        this.sliderAutoAssessHeight = sliderAutoAssessHeight;
+    }
+
     //TODO does this break if we turn the phone sideways and the width is wacky?
-    public static Pair<Integer, Integer> calculateScaledContentHeight(int parentWidth, int parentHeight, int mediaWidth, int mediaHeight) {
+    public static Pair<Integer, Integer> calculateScaledContentDimens(int parentWidth, int parentHeight, int mediaWidth, int mediaHeight) {
         //Calculate the height for the mediaView
         int newViewHeight = Math.round(((float)parentWidth/mediaWidth) * mediaHeight);
 
@@ -275,12 +300,12 @@ public class SlideView extends FrameLayout {
 
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return getDragHandler().onTouchEvent(event);
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return getDragHandler().onInterceptTouchEvent(ev);
     }
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent( getDragHandler().dispatchTouchEvent(ev) );
+    public boolean onTouchEvent(MotionEvent event) {
+        return getDragHandler().onTouchEvent(event);
     }
     @Override
     public void computeScroll() {

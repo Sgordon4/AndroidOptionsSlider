@@ -1,6 +1,5 @@
 package com.example.optionssliderexample.ui.main;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +15,21 @@ import com.example.optionssliderexample.R;
 
 import java.util.List;
 
-
+//Super generic ViewPager, nothing special is done here
 public class ViewPager extends Fragment {
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
 
-    private List<Bitmap> mediaList;
+    private List<Fragment> pageList;
     private int currPosition;
 
-    public static ViewPager newInstance(List<Bitmap> mediaList, int currPosition) {
+    public static ViewPager newInstance(List<Fragment> pageList, int currPosition) {
         ViewPager viewPager = new ViewPager();
-        viewPager.mediaList = mediaList;
+        viewPager.pageList = pageList;
         viewPager.currPosition = currPosition;
         return viewPager;
     }
+
 
 
     @Override
@@ -76,12 +76,11 @@ public class ViewPager extends Fragment {
 
         @Override
         public Fragment createFragment(int position) {
-            return Page.newInstance(mediaList.get(position));
+            return pageList.get(position);
         }
-
         @Override
         public int getItemCount() {
-            return (mediaList == null) ? 0 : mediaList.size();
+            return (pageList == null) ? 0 : pageList.size();
         }
     }
 }

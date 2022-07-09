@@ -5,33 +5,19 @@
     android:layout_height="match_parent">
 
     <com.sgordon4.slideview.SlideView
-        android:id="@+id/slide_test"
+        android:id="@+id/slide_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
-        <FrameLayout
-            android:id="@+id/framelayout"
+        <ImageView
+            android:id="@+id/image_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/lightgrey">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
 
-            <com.github.chrisbanes.photoview.PhotoView
-                android:id="@+id/photo_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <ImageView
-                android:id="@+id/image_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </FrameLayout>
+            android:src="@drawable/sample_jpg"
+            android:adjustViewBounds="true"/>
 
 
         <LinearLayout

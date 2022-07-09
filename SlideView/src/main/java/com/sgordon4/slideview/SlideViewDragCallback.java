@@ -1,4 +1,4 @@
-package com.example.slideview;
+package com.sgordon4.slideview;
 
 import android.view.View;
 
@@ -14,6 +14,11 @@ public class SlideViewDragCallback extends ViewDragHelper.Callback {
     public SlideViewDragCallback(SlideDragHandler slideDragHandler) {
         this.slideDragHandler = slideDragHandler;
         this.slideView = slideDragHandler.slideView;
+
+        //Some children (Exoplayer >:[ ) don't play nice and reset our offset, so we need to un-reset it
+        slideView.fullWrapper.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
+            view.offsetTopAndBottom(currOffset);
+        });
     }
 
     @Override
@@ -47,7 +52,7 @@ public class SlideViewDragCallback extends ViewDragHelper.Callback {
         final double SPEED_LIMIT = 1000;            //Not actually a limiter, just a metric
 
         //Where top of slider is right now
-        int currentSliderTopPos = releasedChild.getTop() + releasedChild.getHeight() - slideDragHandler.slideView.sliderContentHeight;
+        int currentSliderTopPos = releasedChild.getTop() + slideView.getSliderViewWrapper().getTop();
 
 
         //Note: Height is 0 at top of screen, so when something is visibly above something else,
@@ -95,17 +100,20 @@ public class SlideViewDragCallback extends ViewDragHelper.Callback {
         }
     }
 
+    int currOffset = 0;
     @Override
     public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
         super.onViewPositionChanged(changedView, left, top, dx, dy);
+
+        currOffset = top;
 
         //Show slider based on dragWrapper position
         if (top <= -30 && !slideView.getSliderVisible())
             slideView.setSliderVisible(true);
         else if (top > -30 && slideView.getSliderVisible())
             slideView.setSliderVisible(false);
-
     }
+
 
     private void moveView(int endPos) {
         if (slideDragHandler.dragHelper.settleCapturedViewAt(0, endPos)) {

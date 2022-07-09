@@ -1,7 +1,9 @@
-package com.example.slideview;
+package com.sgordon4.slideview;
 
+import android.os.StrictMode;
 import android.os.SystemClock;
 import android.view.MotionEvent;
+import android.view.ViewParent;
 
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
@@ -85,75 +87,8 @@ public class SlideDragHandler {
         slideView.setSliderVisible(true);
     }
 
-    //TODO Animate the move
-    private void moveWrapperBy(int dy) {
-        ViewCompat.offsetTopAndBottom(slideView.fullWrapper, dy);
-    }
-
 
     //---------------------------------------------------------------------------------------------
-
-
-    protected boolean onTouchEvent(MotionEvent event) {
-        return true;
-    }
-
-
-    //Spy on our children lmao (don't try this at home)
-    boolean dragSlop;
-    float startY;
-    protected MotionEvent dispatchTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                startY = ev.getY();
-                dragSlop = false;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if(!getDragEnabled())
-                    break;
-
-                int touchSlop = dragHelper.getTouchSlop();
-                int touchDiff = (int) Math.abs(ev.getY()-startY);
-
-                //If we've confirmed a relatively straight vertical drag
-                if((touchDiff > touchSlop) && !dragSlop) {
-                    dragSlop = true;
-
-                    //Stop things like a viewpager from stealing input
-                    slideView.requestDisallowInterceptTouchEvent(true);
-
-                    //Reset the start coords of the motionEvent so the dragHelper doesn't jump
-                    ev = MotionEvent.obtain(0, SystemClock.uptimeMillis(),
-                            MotionEvent.ACTION_DOWN, ev.getX(), ev.getY(), ev.getMetaState());
-                }
-
-                if(dragSlop) {
-                    dragHelper.processTouchEvent(ev);
-
-                    //If drag was started on a child view like a button,
-                    // that button will be activated if we don't tell it to fuck off
-                    MotionEvent fuckOff = MotionEvent.obtain(0, SystemClock.uptimeMillis(),
-                            MotionEvent.ACTION_CANCEL, 0, 0, ev.getMetaState());
-                    return fuckOff;
-                }
-                break;
-            default:
-                if(dragSlop) {
-                    dragHelper.processTouchEvent(ev);
-                }
-        }
-
-        return ev;
-    }
-
-
-    protected void computeScroll() {
-        if (dragHelper.continueSettling(true)) {
-            ViewCompat.postInvalidateOnAnimation(slideView);
-        }
-    }
-
 
 
     public void addDragListener(SlideViewDragEventListener listener) {
@@ -178,5 +113,96 @@ public class SlideDragHandler {
         //SlideView drag systems will auto-hide/show the slider based on certain drag inputs
         void onCloseSlider();
         void onOpenSlider();
+    }
+
+
+    //---------------------------------------------------------------------------------------------
+
+
+    boolean dragSlop;
+    float startY;
+    protected boolean onInterceptTouchEvent(MotionEvent ev) {
+        dragHelper.processTouchEvent(ev);
+
+        final int action = ev.getAction();
+        if((action == MotionEvent.ACTION_MOVE) && (dragSlop))
+            return true;
+
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                //Initialize things
+                startY = ev.getY();
+                dragSlop = false;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                int touchSlop = dragHelper.getTouchSlop();
+                int touchDiff = (int) Math.abs(ev.getY()-startY);
+
+                //If we've confirmed a relatively straight vertical drag...
+                if((touchDiff > touchSlop) && !dragSlop) {
+                    dragSlop = true;
+                }
+
+                break;
+            default:
+                dragSlop = false;
+                break;
+        }
+
+        return dragSlop;
+    }
+
+
+    protected boolean onTouchEvent(MotionEvent ev) {
+        if(!getDragEnabled())
+            return false;
+
+        final int action = ev.getAction();
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int touchSlop = dragHelper.getTouchSlop();
+                int touchDiff = (int) Math.abs(ev.getY()-startY);
+
+                //If we've confirmed a relatively straight vertical drag...
+                if((touchDiff > touchSlop) && !dragSlop) {
+                    dragSlop = true;
+                }
+
+                //Stop things like a viewpager from stealing input
+                if(dragSlop) {
+                    if (slideView.getParent() != null)
+                        slideView.getParent().requestDisallowInterceptTouchEvent(true);
+                }
+
+
+                //Currently unused, leaving for reference
+                //If drag was started on a child view like a button,
+                // that button will be activated if we don't tell it to fuck off
+                MotionEvent fuckOff = MotionEvent.obtain(0, SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_CANCEL, 0, 0, ev.getMetaState());
+
+
+                break;
+        }
+
+        //Actually send the motionEvent to the dragHelper
+        dragHelper.processTouchEvent(ev);
+
+        return true;
+    }
+
+    protected void computeScroll() {
+        if (dragHelper.continueSettling(true)) {
+            ViewCompat.postInvalidateOnAnimation(slideView);
+        }
+    }
+
+    //TODO Animate the move
+    private void moveWrapperBy(int dy) {
+        ViewCompat.offsetTopAndBottom(slideView.fullWrapper, dy);
     }
 }
